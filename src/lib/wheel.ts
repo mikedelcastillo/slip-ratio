@@ -1,4 +1,4 @@
-import { PhyPoint } from "./kine";
+import { BeamPoint } from "./beam";
 import { Vector, numberRadians, numberZeroToOne } from "./types";
 import { limitValue } from "./util";
 
@@ -37,7 +37,7 @@ const getSlipRatio = (groundSpeed: number, wheelSurfaceSpeed: number) => {
 
 const MAX_ACC = 0.2
 
-export class Wheel extends PhyPoint{
+export class Wheel extends BeamPoint{
   config: WheelConfig
 
   direction: numberRadians = 0
@@ -45,7 +45,7 @@ export class Wheel extends PhyPoint{
   angularVelocity: number = 0
 
   constructor(position: Vector, config: WheelConfig) {
-    super(position)
+    super(position, config.mass)
     this.config = config
   }
 
@@ -77,7 +77,7 @@ export class Wheel extends PhyPoint{
     return this.config.radius * this.angularVelocity
   }
 
-  updateWheel(payload: WheelUpdatePayload) {
+  update(payload: WheelUpdatePayload) {
     const { surfaceGrip, contactPercent, brakePressure } = payload;
     const { grip, radius, contactFriction, angularFriction } = this.config
     const maxGrip = grip * surfaceGrip * contactPercent
@@ -104,7 +104,5 @@ export class Wheel extends PhyPoint{
     this.velocity.x -= sideways * Math.cos(this.directionSide)
     this.velocity.y -= sideways * Math.sin(this.directionSide)
     this.rotationAngle += this.angularVelocity
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
   }
 }
